@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentation Hub - Directory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #060913;
+            --card-bg: rgba(17, 25, 40, 0.82);
+            --card-border: rgba(255, 255, 255, 0.09);
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.45);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.18), transparent 35%),
+                radial-gradient(circle at 85% 25%, rgba(236, 72, 153, 0.14), transparent 35%),
+                radial-gradient(circle at 50% 85%, rgba(16, 185, 129, 0.12), transparent 40%);
+            background-attachment: fixed;
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        /* Responsive Container for Mobile & Wide Desktop */
+        .container-hub {
+            width: 100%;
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 1.25rem;
+        }
+
+        /* Glass Header */
+        .glass-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(16px);
+            background: rgba(6, 9, 19, 0.8);
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        /* Filter Pills */
+        .filter-pill {
+            padding: 0.55rem 1.2rem;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #cbd5e1;
+            background: rgba(30, 41, 59, 0.65);
+            border: 1px solid var(--card-border);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+        }
+        .filter-pill:hover, .filter-pill.active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #ffffff;
+            border-color: transparent;
+            box-shadow: 0 8px 20px -4px var(--accent-glow);
+            transform: translateY(-2px);
+        }
+
+        /* Responsive 3D Grid (1 col mobile, 2 tablet, 3-4 desktop) */
+        .hub-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem 0 4rem;
+            perspective: 1000px;
+        }
+
+        /* Sleek 3D Card */
+        .pres-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 1.25rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            backdrop-filter: blur(12px);
+            transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+            box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.6);
+        }
+        .pres-card:hover {
+            transform: translateY(-8px) rotateX(2deg);
+            border-color: rgba(129, 140, 248, 0.6);
+            box-shadow: 0 22px 45px -12px var(--accent-glow);
+        }
+
+        /* Image Wrapper */
+        .img-box {
+            position: relative;
+            height: 175px;
+            overflow: hidden;
+            background: #0f172a;
+        }
+        .img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .pres-card:hover .img-box img {
+            transform: scale(1.08);
+        }
+        .img-box::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(17, 25, 40, 0.95), transparent 65%);
+        }
+
+        /* Floating Badge */
+        .badge-tag {
+            position: absolute;
+            top: 0.75rem;
+            left: 0.75rem;
+            z-index: 2;
+            padding: 0.28rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.68rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: rgba(15, 23, 42, 0.85);
+            color: #a5b4fc;
+            border: 1px solid rgba(165, 180, 252, 0.3);
+            backdrop-filter: blur(6px);
+        }
+
+        /* Card Content & One-Line Info Rows */
+        .card-body {
+            padding: 1.15rem 1.25rem;
+        }
+        .card-title {
+            font-size: 1.08rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 0.85rem;
+            line-height: 1.35;
+        }
+        .info-line {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.65rem;
+            font-size: 0.78rem;
+            color: #cbd5e1;
+            margin-bottom: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .info-label {
+            font-weight: 800;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            padding: 0.15rem 0.45rem;
+            border-radius: 0.35rem;
+            flex-shrink: 0;
+        }
+        .obj-label { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+        .sub-label { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+
+        /* 3D Direct Link Button */
+        .btn-click {
+            display: block;
+            margin: 0 1.25rem 1.25rem;
+            padding: 0.75rem 1rem;
+            text-align: center;
+            border-radius: 0.75rem;
+            font-size: 0.84rem;
+            font-weight: 800;
+            color: #ffffff;
+            text-decoration: none;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            box-shadow: 0 4px 0 #312e81, 0 8px 16px rgba(79, 70, 229, 0.35);
+            transition: all 0.2s ease;
+        }
+        .btn-click:hover {
+            filter: brightness(1.12);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #312e81, 0 12px 22px rgba(79, 70, 229, 0.5);
+        }
+        .btn-click:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #312e81;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation & Search -->
+    <header class="glass-header">
+        <div class="container-hub py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <a href="index.html" class="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
+                Slide<span class="text-indigo-400">Verse</span> Hub
+            </a>
+            <input 
+                type="text" 
+                id="searchBox" 
+                placeholder="Search presentation type..." 
+                class="w-full sm:w-80 bg-slate-900/90 border border-slate-700/80 rounded-full px-4 py-2 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-indigo-500"
+            >
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container-hub">
+        <!-- Hero & Category Filters -->
+        <div class="pt-8 pb-2 text-center">
+            <h1 class="text-2xl sm:text-4xl font-extrabold text-white">All Presentation Types Directory</h1>
+            <p class="text-slate-400 text-sm mt-2">Select any presentation format for Teaching, Students & Professionals</p>
+
+            <div class="flex items-center justify-start sm:justify-center gap-2 overflow-x-auto py-5 no-scrollbar" id="filterBar">
+                <button class="filter-pill active" data-cat="all">All Types</button>
+                <button class="filter-pill" data-cat="teaching">Teaching</button>
+                <button class="filter-pill" data-cat="student">Student</button>
+                <button class="filter-pill" data-cat="pro">Professional Student</button>
+                <button class="filter-pill" data-cat="science">Science & Tech</button>
+            </div>
+        </div>
+
+        <!-- Presentation Cards Grid -->
+        <div id="grid" class="hub-grid"></div>
+    </main>
+
+    <!-- Easy-to-Edit Minimal JavaScript -->
+    <script>
+        // Add or edit any presentation in one line: [Title, Category, Link, Badge, Objective 1-line, Subjective 1-line, ImageURL]
+        const presentations = [
+            ["Teaching Presentation", "teaching", "teaching-presentation.html", "Teaching", "Chapter MCQs & Quick Quiz", "Concept Theory & Board Notes", "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&q=80"],
+            ["Professional Student Presentation", "pro", "professional-student-presentation.html", "Pro Student", "Project KPIs & Data Metrics", "Case Study & Executive Summary", "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&q=80"],
+            ["Smartboard Lesson Presentation", "teaching", "smartboard-lesson-presentation.html", "Teaching", "Interactive Match & Polls", "Visual Diagrams & Mind Maps", "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=600&q=80"],
+            ["Capstone Project Presentation", "student", "capstone-project-presentation.html", "Student", "System Accuracy & Test Stats", "Architecture & Future Scope", "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600&q=80"],
+            ["Thesis Defense Presentation", "student", "thesis-defense-presentation.html", "Student", "Sample Data & P-Value Results", "Research Gap & Methodology", "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&q=80"],
+            ["Exam Revision Presentation", "teaching", "exam-revision-presentation.html", "Teaching", "Top 50 MCQs & Formula List", "Long Answer Key Points", "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600&q=80"],
+            ["Student Seminar Presentation", "student", "student-seminar-presentation.html", "Student", "Key Facts & Trend Figures", "Topic Overview & Discussion", "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=600&q=80"],
+            ["Science Lab Presentation", "science", "science-lab-presentation.html", "Science", "Observation Table & Readings", "Experiment Theory & Inference", "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=600&q=80"],
+            ["Coding & Hackathon Presentation", "science", "coding-hackathon-presentation.html", "Tech", "Tech Stack & Speed Benchmarks", "Problem Solution & Live Demo", "https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80"],
+            ["Internship Report Presentation", "pro", "internship-training-presentation.html", "Pro Student", "Tasks Completed & Sprint Stats", "Industry Learning & Role Summary", "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&q=80"],
+            ["Case Study MBA Presentation", "pro", "case-study-presentation.html", "Pro Student", "ROI Metrics & Market Share", "SWOT Analysis & Strategy Plan", "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&q=80"],
+            ["Medical Case Presentation", "science", "medical-clinical-presentation.html", "Medical", "Vitals & Lab Test Reports", "Patient History & Diagnosis Plan", "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&q=80"],
+            ["Mathematics Theorem Presentation", "teaching", "mathematics-theorem-presentation.html", "Teaching", "Formula Drills & Mental Math", "Step-by-Step Theorem Proofs", "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=600&q=80"],
+            ["History Timeline Presentation", "teaching", "history-timeline-presentation.html", "Teaching", "Important Dates & Map Facts", "Historical Causes & Impacts", "https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=600&q=80"],
+            ["Literature & Book Presentation", "student", "literature-book-review-presentation.html", "Student", "Author Facts & Poetic Devices", "Theme Critique & Character Study", "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=600&q=80"],
+            ["Geography & Ecology Presentation", "teaching", "geography-ecology-presentation.html", "Teaching", "Climate Data & Map Coordinates", "Ecosystem & Environmental Notes", "https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=600&q=80"],
+            ["Economics & Commerce Presentation", "pro", "economics-commerce-presentation.html", "Pro Student", "GDP Rates & Balance Sheet Data", "Market Trends & Fiscal Policy", "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&q=80"],
+            ["Law & Moot Court Presentation", "pro", "law-moot-court-presentation.html", "Pro Student", "Article Numbers & Case Dates", "Legal Arguments & Judgments", "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&q=80"],
+            ["Debate & MUN Presentation", "student", "debate-mun-presentation.html", "Student", "UN Stats & Global Resolutions", "Policy Stance & Rebuttal Points", "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80"],
+            ["Group Project Presentation", "student", "group-project-presentation.html", "Student", "Team Milestones & Survey Data", "Combined Research & Conclusion", "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80"],
+            ["Teacher Training Presentation", "teaching", "faculty-development-presentation.html", "Teaching", "Bloom's Rubric & Lesson Goals", "Modern Pedagogy & NEP Methods", "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=600&q=80"],
+            ["School Orientation Presentation", "teaching", "school-orientation-presentation.html", "Teaching", "Academic Calendar & Exam Rules", "Student Growth & Parent Guide", "https://images.unsplash.com/photo-1577896851231-70ef18881754?w=600&q=80"],
+            ["Startup Pitch Presentation", "pro", "startup-pitch-presentation.html", "Pro Student", "Market Size & Revenue Numbers", "Problem Story & Business Model", "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=600&q=80"],
+            ["Career Portfolio Presentation", "pro", "career-portfolio-presentation.html", "Pro Student", "Skill Ratings & Certifications", "Project Highlights & Bio Summary", "https://images.unsplash.com/photo-1542744094-3a31f272c490?w=600&q=80"],
+            ["AI & Data Science Presentation", "science", "ai-data-science-presentation.html", "Tech", "Model Accuracy & F1-Score", "Dataset Workflow & AI Insights", "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80"],
+            ["Psychology Study Presentation", "student", "psychology-behavioral-presentation.html", "Student", "Survey Scores & Scale Metrics", "Behavioral Theory & Case Analysis", "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=600&q=80"],
+            ["Architecture Studio Presentation", "pro", "architecture-design-presentation.html", "Pro Student", "Area Ratio & Structural Loads", "3D Concept & Spatial Design", "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=600&q=80"],
+            ["Quiz & Olympiad Presentation", "teaching", "quiz-olympiad-presentation.html", "Teaching", "Rapid Fire MCQs & Scoreboard", "Answer Facts & Trivia Solutions", "https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?w=600&q=80"]
+        ];
+
+        const grid = document.getElementById("grid");
+        const searchBox = document.getElementById("searchBox");
+        let activeCat = "all";
+
+        function render() {
+            const q = searchBox.value.toLowerCase();
+            grid.innerHTML = presentations
+                .filter(([title, cat]) => (activeCat === "all" || cat === activeCat) && title.toLowerCase().includes(q))
+                .map(([title, cat, link, badge, obj, sub, img]) => `
+                    <article class="pres-card">
+                        <div>
+                            <div class="img-box">
+                                <span class="badge-tag">${badge}</span>
+                                <img src="${img}" alt="${title}" loading="lazy">
+                            </div>
+                            <div class="card-body">
+                                <h2 class="card-title">${title}</h2>
+                                <div class="info-line"><span class="info-label obj-label">Objective</span> ${obj}</div>
+                                <div class="info-line"><span class="info-label sub-label">Subjective</span> ${sub}</div>
+                            </div>
+                        </div>
+                        <a href="${link}" class="btn-click">Click Here</a>
+                    </article>
+                `).join("");
+        }
+
+        document.getElementById("filterBar").addEventListener("click", (e) => {
+            if (!e.target.dataset.cat) return;
+            document.querySelectorAll(".filter-pill").forEach(b => b.classList.remove("active"));
+            e.target.classList.add("active");
+            activeCat = e.target.dataset.cat;
+            render();
+        });
+
+        searchBox.addEventListener("input", render);
+        render();
+    </script>
+</body>
+</html>
